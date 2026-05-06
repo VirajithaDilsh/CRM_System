@@ -5,6 +5,7 @@ type PipelineItem = {
 
 type PipelineChartProps = {
   items: PipelineItem[];
+  totalLeads: number;
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -27,6 +28,7 @@ const DEFAULT_STATUSES = [
 
 export default function PipelineChart({
   items,
+  totalLeads,
 }: PipelineChartProps) {
   // Ensure all statuses always appear
   const normalizedItems = DEFAULT_STATUSES.map((status) => {
@@ -45,14 +47,21 @@ export default function PipelineChart({
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900">
-          Lead Pipeline
-        </h2>
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">
+            Lead Pipeline
+          </h2>
 
-        <p className="mt-1 text-sm text-gray-500">
-          Overview of lead progress by stage
-        </p>
+          <p className="mt-1 text-sm text-gray-500">
+            Overview of lead progress by stage
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700">
+          Total Leads: {totalLeads}
+        </div>
       </div>
 
       <div className="flex h-80 items-end justify-between gap-4">
@@ -69,7 +78,7 @@ export default function PipelineChart({
                 {item.count}
               </span>
 
-              {/* Bar Area */}
+              {/* Bar */}
               <div className="flex h-60 w-full items-end rounded-xl bg-gray-50 p-1">
                 <div
                   className={`w-full rounded-xl transition-all duration-300 hover:opacity-90 ${
