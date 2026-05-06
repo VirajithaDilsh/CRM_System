@@ -10,10 +10,16 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
-app.use(cors({
-  origin: true,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://crm-system-six-vert.vercel.app/",
+    ],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 connectDB();
