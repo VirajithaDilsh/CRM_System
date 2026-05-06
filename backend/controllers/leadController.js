@@ -1,30 +1,27 @@
-const Lead = require('../models/Lead');
+const Lead = require("../models/Lead");
 
+// CREATE LEAD
 const createLead = async (req, res) => {
-    try {
-        const lead=await Lead.create(req.body);
-        res.status(201).json(lead);
-    } catch (error) {
-        res.status(500).json({ message: error.message });   
-    }
+  try {
+    const lead = await Lead.create(req.body);
+    res.status(201).json(lead);
+  } catch (error) {
+    console.error("CREATE LEAD ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
+// GET ALL LEADS
 const getLeads = async (req, res) => {
   try {
-    const { status, leadSource, assignedSalesperson, search } = req.query;
+    const { status, leadSource, assignedSalesPerson, search } = req.query;
 
     const filter = {};
 
-    if (status) {
-      filter.status = status;
-    }
-
-    if (leadSource) {
-      filter.leadSource = leadSource;
-    }
-
-    if (assignedSalesperson) {
-      filter.assignedSalesperson = assignedSalesperson;
+    if (status) filter.status = status;
+    if (leadSource) filter.leadSource = leadSource;
+    if (assignedSalesPerson) {
+      filter.assignedSalesPerson = assignedSalesPerson;
     }
 
     if (search) {
@@ -39,48 +36,70 @@ const getLeads = async (req, res) => {
 
     res.status(200).json(leads);
   } catch (error) {
+    console.error("GET LEADS ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
+// GET SINGLE LEAD
 const getLeadById = async (req, res) => {
-    try {
-        const lead=await Lead.findById(req.params.id);
-        if (!lead) {
-            return res.status(404).json({ message: 'Lead not found' });
-        }
-        res.status(200).json(lead);
-    } catch (error) {
-        res.status(500).json({ message: error.message });   
+  try {
+    const lead = await Lead.findById(req.params.id);
+
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
     }
+
+    res.status(200).json(lead);
+  } catch (error) {
+    console.error("GET LEAD BY ID ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
+// UPDATE LEAD
 const updateLead = async (req, res) => {
-    try {
-        const lead=await Lead.findByIdAndUpdate(req.params.id, req.body, { new: true,runValidators: true });
-        if (!lead) {
-            return res.status(404).json({ message: 'Lead not found' });
-        }
-        res.status(200).json(lead);
-    } catch (error) {
-        res.status(500).json({ message: error.message });   
+  try {
+    const lead = await Lead.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
     }
+
+    res.status(200).json(lead);
+  } catch (error) {
+    console.error("UPDATE LEAD ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
+// DELETE LEAD
 const deleteLead = async (req, res) => {
-    try {
-        const lead=await Lead.findByIdAndDelete(req.params.id);
-        if (!lead) {
-            return res.status(404).json({ message: 'Lead not found' });
-        }
-        res.status(200).json({ message: 'Lead deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });   
+  try {
+    const lead = await Lead.findByIdAndDelete(req.params.id);
+
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
     }
+
+    res.status(200).json({ message: "Lead deleted successfully" });
+  } catch (error) {
+    console.error("DELETE LEAD ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
+
+// ADD NOTE
 const addNote = async (req, res) => {
   try {
     const { content } = req.body;
+
+    if (!content) {
+      return res.status(400).json({ message: "Note content is required" });
+    }
 
     const lead = await Lead.findById(req.params.id);
 
@@ -90,7 +109,7 @@ const addNote = async (req, res) => {
 
     const newNote = {
       content,
-      createdBy: req.user.id, // from token
+      createdBy: req.user?._id || req.user?.id || null,
     };
 
     lead.notes.push(newNote);
@@ -99,14 +118,38 @@ const addNote = async (req, res) => {
 
     res.status(200).json(lead);
   } catch (error) {
+    console.error("ADD NOTE ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+// DELETE NOTE
+const deleteNote = async (req, res) => {
+  try {
+    const lead = await Lead.findById(req.params.id);
+
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+
+    lead.notes = lead.notes.filter(
+      (note) => note._id.toString() !== req.params.noteId
+    );
+
+    await lead.save();
+
+    res.status(200).json(lead);
+  } catch (error) {
+    console.error("DELETE NOTE ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
 module.exports = {
-    createLead,
-    getLeads,
-    getLeadById,
-    updateLead,
-    deleteLead
-};  
+  createLead,
+  getLeads,
+  getLeadById,
+  updateLead,
+  deleteLead,
+  addNote,
+  deleteNote,
+};
