@@ -1,6 +1,7 @@
 type LeadFiltersProps = {
   search: string;
   setSearch: (value: string) => void;
+  onSearchSubmit: () => void;
 
   status: string;
   setStatus: (value: string) => void;
@@ -14,10 +15,10 @@ type LeadFiltersProps = {
   salesPeople: string[];
 };
 
-
 export default function LeadFilters({
   search,
   setSearch,
+  onSearchSubmit,
   status,
   setStatus,
   source,
@@ -25,8 +26,7 @@ export default function LeadFilters({
   salesPerson,
   setSalesPerson,
   salesPeople,
-}: LeadFiltersProps){
-  
+}: LeadFiltersProps) {
   return (
     <div className="grid grid-cols-1 gap-3 rounded-xl border border-gray-300 bg-white p-4 text-black md:grid-cols-4">
       <input
@@ -35,6 +35,11 @@ export default function LeadFilters({
         className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onSearchSubmit();
+          }
+        }}
       />
 
       <select

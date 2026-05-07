@@ -12,6 +12,8 @@ export default function LeadsPage() {
   const [salesPeople, setSalesPeople] = useState<string[]>([]);
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [status, setStatus] = useState("");
   const [source, setSource] = useState("");
   const [salesPerson, setSalesPerson] = useState("");
@@ -20,12 +22,20 @@ export default function LeadsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const fetchLeads = async () => {
     const token = localStorage.getItem("token");
 
     const params = new URLSearchParams();
 
-    if (search) params.append("search", search);
+    if (debouncedSearch) params.append("search", debouncedSearch);
     if (status) params.append("status", status);
     if (source) params.append("leadSource", source);
     if (salesPerson) params.append("assignedSalesPerson", salesPerson);
@@ -129,7 +139,7 @@ export default function LeadsPage() {
     };
 
     loadLeads();
-  }, [search, status, source, salesPerson]);
+  }, [debouncedSearch, status, source, salesPerson]);
 
   if (loading) {
     return (
@@ -165,6 +175,7 @@ export default function LeadsPage() {
       <LeadFilters
         search={search}
         setSearch={setSearch}
+        onSearchSubmit={() => setDebouncedSearch(search)}
         status={status}
         setStatus={setStatus}
         source={source}
@@ -190,7 +201,7 @@ export default function LeadsPage() {
           setIsFormOpen(false);
           setSelectedLead(null);
         }}
-        onCreated={fetchLeads}
+        onCreated={refreshLeads}
         lead={selectedLead}
       />
     </div>
