@@ -196,4 +196,106 @@ POST /api/leads
 ```txt
 GET /api/leads/:id
 ```
+## Update lead
+```txt
+PUT /api/leads/:id
+```
+## Delete lead
+```txt
+DELETE /api/leads/:id
+```
+# Notes
+## Add note
+```txt
+POST /api/leads/:id/notes
+```
+# Delete note
+```txt
+DELETE /api/leads/:id/notes/:noteId
+```
+# Dashboard
+## Dashboard statistics
+```txt
+GET /api/dashboard
+```
+# Folder Structure
 
+```txt
+CRM_System/
+│
+├── frontend/
+│   ├── src/
+│   ├── components/
+│   ├── app/
+│   └── types/
+│
+├── backend/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   └── config/
+│
+└── README.md
+```
+# UI Features
+-Responsive dashboard layout
+-Sidebar navigation
+-Status badges
+-Modal forms
+-Clean card-based UI
+-Responsive tables
+-Protected routes
+
+# Known Limitations
+-No admin panel for user management
+-Passwords are stored without hashing
+-No pagination
+-No email notifications
+-No file uploads
+
+# Future Improvements
+## Possible future improvements:
+-Admin user management
+-Role-based access control
+-Password hashing with bcrypt
+-Email notifications
+-Lead activity timeline
+-Kanban pipeline board
+-Advanced charts and analytics
+-Pagination and sorting
+-Dark mode
+
+# Reflection
+
+## This project helped improve my understanding of:
+
+-Full-stack application architecture
+-REST API development
+-JWT authentication
+-MongoDB schema design
+-Next.js frontend development
+-Tailwind CSS UI design
+-Route protection
+-CRUD operations
+-Real-world debugging
+
+One challenge was integrating frontend and backend authentication while protecting routes properly. I solved this by implementing reusable JWT middleware and frontend protected route components.
+
+I also learned how to structure a CRM application similar to real SaaS products.
+
+# Deployment
+## Frontend
+```txt
+https://crm-system-six-vert.vercel.app/
+```
+## Backend
+https://crm-system-k8aa.onrender.com
+
+## Demo Video
+Add demo video link here.
+
+# Author
+Virajitha Jayathilaka
+BSc(Hons) Applied Science in Computing
+University Of Jaffna
