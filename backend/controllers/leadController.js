@@ -44,7 +44,8 @@ const getLeads = async (req, res) => {
 // GET SINGLE LEAD
 const getLeadById = async (req, res) => {
   try {
-    const lead = await Lead.findById(req.params.id);
+    const lead = await Lead.findById(req.params.id)
+      .populate("notes.createdBy", "name email");
 
     if (!lead) {
       return res.status(404).json({ message: "Lead not found" });
@@ -109,14 +110,17 @@ const addNote = async (req, res) => {
 
     const newNote = {
       content,
-      createdBy: req.user?._id || req.user?.id || null,
+      createdBy: req.user._id || req.user.id,
     };
 
     lead.notes.push(newNote);
 
     await lead.save();
 
-    res.status(200).json(lead);
+    const updatedLead = await Lead.findById(req.params.id)
+      .populate("notes.createdBy", "name email");
+
+    res.status(200).json(updatedLead);
   } catch (error) {
     console.error("ADD NOTE ERROR:", error);
     res.status(500).json({ message: error.message });
