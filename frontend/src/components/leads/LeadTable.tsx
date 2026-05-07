@@ -24,7 +24,9 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
             <th className="px-6 py-4 text-sm font-semibold">Source</th>
             <th className="px-6 py-4 text-sm font-semibold">Sales Person</th>
             <th className="px-6 py-4 text-sm font-semibold">Value</th>
-            <th className="px-6 py-4 text-right text-sm font-semibold">Actions</th>
+            <th className="px-6 py-4 text-right text-sm font-semibold">
+              Actions
+            </th>
           </tr>
         </thead>
 
@@ -38,9 +40,9 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
               <td className="px-6 py-4">
                 <p className="font-medium text-gray-900">{lead.leadName}</p>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
-  <Building2 className="h-4 w-4" />
-  <p>{lead.companyName}</p>
-</div>
+                  <Building2 className="h-4 w-4" />
+                  <p>{lead.companyName}</p>
+                </div>
               </td>
 
               <td className="px-6 py-4">
