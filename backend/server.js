@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://crm-system-six-vert.vercel.app/",
+      "https://crm-system-qu3jkb4zq-virajithas-projects.vercel.app/",
     ],
     credentials: true,
   })
