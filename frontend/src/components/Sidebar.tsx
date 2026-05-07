@@ -41,8 +41,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex min-h-screen w-64 flex-col border-r bg-white">
-     
+    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col border-r bg-white">
       <div className="border-b border-gray-200 p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-black">
@@ -61,7 +60,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-2 p-4">
+      <nav className="flex-1 space-y-2 overflow-y-auto p-4">
         {links.map((link) => {
           const active = pathname === link.href;
 
@@ -95,7 +94,7 @@ export default function Sidebar() {
             </p>
 
             <p className="truncate text-xs text-gray-500">
-              {user?.email || "admin@crm.com"}
+              {user?.email || "admin@example.com"}
             </p>
           </div>
         </div>

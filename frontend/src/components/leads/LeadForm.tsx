@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { Lead } from "@/types/lead";
 
 type LeadFormProps = {
   isOpen: boolean;
   onClose: () => void;
   onCreated: () => void;
+  lead?: Lead | null;
 };
 
 export default function LeadForm({
@@ -20,7 +22,7 @@ export default function LeadForm({
     email: "",
     phone: "",
     leadSource: "Website",
-    assignedSalesPerson: "Admin User",
+    assignedSalesPerson: "",
     status: "New",
     estimatedDealValue: "",
   });
@@ -221,7 +223,7 @@ export default function LeadForm({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg border px-4 py-2 text-sm"
+                className="rounded-lg border text-gray-500 px-4 py-2 text-sm"
               >
                 Cancel
               </button>

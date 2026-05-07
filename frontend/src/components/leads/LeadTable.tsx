@@ -7,24 +7,24 @@ import { useRouter } from "next/navigation";
 
 type LeadTableProps = {
   leads: Lead[];
+  onEdit: (lead: Lead) => void;
+  onDelete: (id: string) => void;
 };
 
-export default function LeadTable({ leads }: LeadTableProps) {
+export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
   const router = useRouter();
 
   return (
     <div className="overflow-x-auto rounded-xl border bg-white">
       <table className="w-full text-left">
         <thead className="border-b bg-gray-50">
-          <tr className="text text-gray-500">
+          <tr className="text-gray-500">
             <th className="px-6 py-4 text-sm font-semibold">Lead</th>
             <th className="px-6 py-4 text-sm font-semibold">Status</th>
             <th className="px-6 py-4 text-sm font-semibold">Source</th>
             <th className="px-6 py-4 text-sm font-semibold">Sales Person</th>
             <th className="px-6 py-4 text-sm font-semibold">Value</th>
-            <th className="px-6 py-4 text-right text-sm font-semibold">
-              Actions
-            </th>
+            <th className="px-6 py-4 text-right text-sm font-semibold">Actions</th>
           </tr>
         </thead>
 
@@ -36,11 +36,8 @@ export default function LeadTable({ leads }: LeadTableProps) {
               className="cursor-pointer border-b last:border-none hover:bg-gray-50"
             >
               <td className="px-6 py-4">
-                <div>
-                  <p className="font-medium text-gray-900">{lead.leadName}</p>
-
-                  <p className="text-sm text-gray-500">{lead.companyName}</p>
-                </div>
+                <p className="font-medium text-gray-900">{lead.leadName}</p>
+                <p className="text-sm text-gray-500">{lead.companyName}</p>
               </td>
 
               <td className="px-6 py-4">
@@ -61,11 +58,25 @@ export default function LeadTable({ leads }: LeadTableProps) {
 
               <td className="px-6 py-4">
                 <div className="flex items-center justify-end gap-2">
-                  <button className="rounded p-2 hover:bg-gray-100">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(lead);
+                    }}
+                    className="rounded p-2 hover:bg-gray-100"
+                  >
                     <Pencil className="h-4 w-4 text-gray-600" />
                   </button>
 
-                  <button className="rounded p-2 hover:bg-red-50">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(lead._id);
+                    }}
+                    className="rounded p-2 hover:bg-red-50"
+                  >
                     <Trash2 className="h-4 w-4 text-red-600" />
                   </button>
                 </div>

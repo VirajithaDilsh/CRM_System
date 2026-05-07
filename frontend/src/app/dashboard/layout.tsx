@@ -1,4 +1,5 @@
 import Sidebar from "@/components/Sidebar";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function CRMLayout({
   children,
@@ -6,12 +7,15 @@ export default function CRMLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+    <div className="min-h-screen bg-gray-50">
+      <ProtectedRoute>
+        <Sidebar />
 
-      <main className="flex-1 p-6">
+      <main className="ml-64 min-h-screen p-6">
         {children}
       </main>
+      </ProtectedRoute>
+      
     </div>
   );
 }

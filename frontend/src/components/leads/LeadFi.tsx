@@ -1,11 +1,19 @@
 type LeadFiltersProps = {
   search: string;
   setSearch: (value: string) => void;
+
   status: string;
   setStatus: (value: string) => void;
+
   source: string;
   setSource: (value: string) => void;
+
+  salesPerson: string;
+  setSalesPerson: (value: string) => void;
+
+  salesPeople: string[];
 };
+
 
 export default function LeadFilters({
   search,
@@ -14,9 +22,13 @@ export default function LeadFilters({
   setStatus,
   source,
   setSource,
-}: LeadFiltersProps) {
+  salesPerson,
+  setSalesPerson,
+  salesPeople,
+}: LeadFiltersProps){
+  
   return (
-    <div className="grid grid-cols-1 gap-3 rounded-xl text-black border border-gray-300 bg-white p-4 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 rounded-xl border border-gray-300 bg-white p-4 text-black md:grid-cols-4">
       <input
         type="text"
         placeholder="Search by name, company, email..."
@@ -51,6 +63,20 @@ export default function LeadFilters({
         <option value="Cold Email">Cold Email</option>
         <option value="Event">Event</option>
         <option value="Other">Other</option>
+      </select>
+
+      <select
+        className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+        value={salesPerson}
+        onChange={(e) => setSalesPerson(e.target.value)}
+      >
+        <option value="">All Sales Persons</option>
+
+        {salesPeople.map((person) => (
+          <option key={person} value={person}>
+            {person}
+          </option>
+        ))}
       </select>
     </div>
   );

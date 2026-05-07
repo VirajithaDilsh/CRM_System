@@ -12,7 +12,11 @@ export type Lead = {
   notes?: {
     _id?: string;
     content: string;
-    createdBy: string;
+   createdBy: {
+      _id: string;
+      name: string;
+      email?: string;
+    };
     createdAt: string;
   }[];
 

@@ -13,10 +13,12 @@ import {
   Calendar,
   DollarSign,
   Trash2,
+  Pencil,
 } from "lucide-react";
 
 import { Lead } from "@/types/lead";
 import StatusBadge from "@/components/leads/StatusBadge";
+import LeadFormModal from "@/components/leads/LeadForm";
 
 export default function LeadDetailPage() {
   const params = useParams();
@@ -24,20 +26,18 @@ export default function LeadDetailPage() {
 
   const [lead, setLead] = useState<Lead | null>(null);
   const [noteContent, setNoteContent] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const id = params.id as string;
 
   const getLead = async () => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/leads/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/leads/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!res.ok) {
       router.push("/dashboard/leads");
@@ -47,16 +47,13 @@ export default function LeadDetailPage() {
     return await res.json();
   };
 
+  const refreshLead = async () => {
+    const data = await getLead();
+    if (data) setLead(data);
+  };
+
   useEffect(() => {
-    const loadLead = async () => {
-      const data = await getLead();
-
-      if (data) {
-        setLead(data);
-      }
-    };
-
-    loadLead();
+    refreshLead();
   }, [id]);
 
   const updateStatus = async (newStatus: string) => {
@@ -73,11 +70,42 @@ export default function LeadDetailPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: newStatus }),
-      }
+      },
     );
+
+    if (!res.ok) {
+      console.error("Failed to update status");
+      return;
+    }
 
     const data = await res.json();
     setLead(data);
+  };
+
+  const deleteLead = async () => {
+    if (!lead) return;
+
+    const confirmDelete = confirm("Are you sure you want to delete this lead?");
+    if (!confirmDelete) return;
+
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/leads/${lead._id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      console.error("Failed to delete lead");
+      return;
+    }
+
+    router.push("/dashboard/leads");
   };
 
   const addNote = async (e: React.FormEvent) => {
@@ -98,8 +126,13 @@ export default function LeadDetailPage() {
         body: JSON.stringify({
           content: noteContent,
         }),
-      }
+      },
     );
+
+    if (!res.ok) {
+      console.error("Failed to add note");
+      return;
+    }
 
     const data = await res.json();
 
@@ -119,8 +152,13 @@ export default function LeadDetailPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
+
+    if (!res.ok) {
+      console.error("Failed to delete note");
+      return;
+    }
 
     const data = await res.json();
     setLead(data);
@@ -160,18 +198,43 @@ export default function LeadDetailPage() {
           </p>
         </div>
 
-        <select
-          value={lead.status}
-          className="rounded-lg border bg-white px-3 py-2 text-sm"
-          onChange={(e) => updateStatus(e.target.value)}
-        >
-          <option value="New">New</option>
-          <option value="Contacted">Contacted</option>
-          <option value="Qualified">Qualified</option>
-          <option value="Proposal Sent">Proposal Sent</option>
-          <option value="Won">Won</option>
-          <option value="Lost">Lost</option>
-        </select>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-600">
+                Lead Status
+              </p>
+            </div>
+
+            <select
+              value={lead.status}
+              className="rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-800 outline-none transition focus:border-black focus:bg-white"
+              onChange={(e) => updateStatus(e.target.value)}
+            >
+              <option value="New">New</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Qualified">Qualified</option>
+              <option value="Proposal Sent">Proposal Sent</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+            <button
+              onClick={() => setIsFormOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit
+            </button>
+
+            <button
+              onClick={deleteLead}
+              className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -196,7 +259,9 @@ export default function LeadDetailPage() {
                 <Phone className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Phone</p>
-                  <p className="text-sm font-medium">{lead.phone || "—"}</p>
+                  <p className="text-sm font-medium text-blue-600">
+                    {lead.phone || "—"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -212,7 +277,7 @@ export default function LeadDetailPage() {
                 <DollarSign className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Estimated Value</p>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-medium text-black">
                     Rs. {lead.estimatedDealValue}
                   </p>
                 </div>
@@ -222,7 +287,7 @@ export default function LeadDetailPage() {
                 <UserCircle2 className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Assigned To</p>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-medium text-black">
                     {lead.assignedSalesPerson}
                   </p>
                 </div>
@@ -232,7 +297,9 @@ export default function LeadDetailPage() {
                 <Globe className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Source</p>
-                  <p className="text-sm font-medium">{lead.leadSource}</p>
+                  <p className="text-sm font-medium text-black">
+                    {lead.leadSource}
+                  </p>
                 </div>
               </div>
 
@@ -240,7 +307,7 @@ export default function LeadDetailPage() {
                 <Calendar className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Created</p>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-medium text-black">
                     {formatDate(lead.createdAt)}
                   </p>
                 </div>
@@ -250,13 +317,13 @@ export default function LeadDetailPage() {
         </div>
 
         <div className="rounded-xl border bg-white p-5 shadow-sm lg:col-span-2">
-          <h2 className="mb-4 text-lg font-semibold">Notes</h2>
+          <h2 className="mb-4 text-lg font-semibold text-black">Notes</h2>
 
           <form onSubmit={addNote} className="mb-5 space-y-3">
             <textarea
               required
               placeholder="Add a note..."
-              className="min-h-24 w-full rounded-lg border px-3 py-2 text-sm"
+              className="min-h-24 w-full rounded-lg border px-3 py-2 text-sm text-black placeholder:text-gray-400"
               value={noteContent}
               onChange={(e) => setNoteContent(e.target.value)}
             />
@@ -275,12 +342,18 @@ export default function LeadDetailPage() {
                 >
                   <div>
                     <p className="text-sm text-gray-700">{note.content}</p>
+
                     <p className="mt-2 text-xs text-gray-400">
-                      {new Date(note.createdAt).toLocaleString()}
+                      {note.createdBy?.name
+                        ? `By ${note.createdBy.name} on ${new Date(
+                            note.createdAt,
+                          ).toLocaleString()}`
+                        : new Date(note.createdAt).toLocaleString()}
                     </p>
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => deleteNote(note._id)}
                     className="rounded p-2 text-red-500 hover:bg-red-50"
                   >
@@ -294,6 +367,13 @@ export default function LeadDetailPage() {
           )}
         </div>
       </div>
+
+      <LeadFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onCreated={refreshLead}
+        lead={lead}
+      />
     </div>
   );
 }
