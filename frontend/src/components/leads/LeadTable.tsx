@@ -58,7 +58,7 @@ export default function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
               </td>
 
               <td className="px-6 py-4 font-medium text-gray-600">
-                Rs. {lead.estimatedDealValue}
+                $. {lead.estimatedDealValue}
               </td>
 
               <td className="px-6 py-4">
