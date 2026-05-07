@@ -15,6 +15,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://crm-system-qu3jkb4zq-virajithas-projects.vercel.app",
+      "https://crm-system-six-vert.vercel.app",
     ],
     credentials: true,
   })
