@@ -62,12 +62,15 @@ export default function LeadsPage() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/leads/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/leads/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (!res.ok) {
         throw new Error("Failed to delete lead");
@@ -181,12 +184,13 @@ export default function LeadsPage() {
       />
 
       <LeadFormModal
+        key={selectedLead?._id || "create"}
         isOpen={isFormOpen}
         onClose={() => {
           setIsFormOpen(false);
           setSelectedLead(null);
         }}
-        onCreated={refreshLeads}
+        onCreated={fetchLeads}
         lead={selectedLead}
       />
     </div>

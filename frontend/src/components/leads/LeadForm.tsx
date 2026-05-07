@@ -15,16 +15,18 @@ export default function LeadForm({
   isOpen,
   onClose,
   onCreated,
+  lead,
 }: LeadFormProps) {
   const [formData, setFormData] = useState({
-    leadName: "",
-    companyName: "",
-    email: "",
-    phone: "",
-    leadSource: "Website",
-    assignedSalesPerson: "",
-    status: "New",
-    estimatedDealValue: "",
+    leadName: lead?.leadName || "",
+    companyName: lead?.companyName || "",
+    email: lead?.email || "",
+    phone: lead?.phone || "",
+    leadSource: lead?.leadSource || "Website",
+    assignedSalesPerson: lead?.assignedSalesPerson || "",
+    status: lead?.status || "New",
+    estimatedDealValue:
+      lead?.estimatedDealValue?.toString() || "",
   });
 
   if (!isOpen) return null;
@@ -32,38 +34,29 @@ export default function LeadForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/leads`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          estimatedDealValue:
-            Number(formData.estimatedDealValue) || 0,
-        }),
-      });
+    const url = lead
+      ? `${process.env.NEXT_PUBLIC_API_URL}/leads/${lead._id}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/leads`;
 
-      onCreated();
-      onClose();
+    const method = lead ? "PUT" : "POST";
 
-      setFormData({
-        leadName: "",
-        companyName: "",
-        email: "",
-        phone: "",
-        leadSource: "Website",
-        assignedSalesPerson: "Admin User",
-        status: "New",
-        estimatedDealValue: "",
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...formData,
+        estimatedDealValue:
+          Number(formData.estimatedDealValue) || 0,
+      }),
+    });
+
+    onCreated();
+    onClose();
   };
 
   return (
@@ -76,8 +69,8 @@ export default function LeadForm({
 
         <div className="relative w-full max-w-2xl rounded-xl bg-white shadow-xl">
           <div className="flex items-center justify-between border-b px-6 py-4">
-            <h2 className="text-lg text-black font-semibold">
-              Create New Lead
+            <h2 className="text-lg font-semibold text-black">
+              {lead ? "Edit Lead" : "Create New Lead"}
             </h2>
 
             <button
@@ -88,10 +81,7 @@ export default function LeadForm({
             </button>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5 p-6"
-          >
+          <form onSubmit={handleSubmit} className="space-y-5 p-6">
             <div className="grid grid-cols-1 gap-4 text-black md:grid-cols-2">
               <input
                 required
@@ -122,7 +112,7 @@ export default function LeadForm({
               />
             </div>
 
-            <div className="grid grid-cols-1 text-black gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 text-black md:grid-cols-2">
               <input
                 required
                 type="email"
@@ -151,7 +141,7 @@ export default function LeadForm({
               />
             </div>
 
-            <div className="grid grid-cols-1 text-black gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 text-black md:grid-cols-2">
               <select
                 className="rounded-lg border px-3 py-2"
                 value={formData.status}
@@ -165,9 +155,7 @@ export default function LeadForm({
                 <option value="New">New</option>
                 <option value="Contacted">Contacted</option>
                 <option value="Qualified">Qualified</option>
-                <option value="Proposal Sent">
-                  Proposal Sent
-                </option>
+                <option value="Proposal Sent">Proposal Sent</option>
                 <option value="Won">Won</option>
                 <option value="Lost">Lost</option>
               </select>
@@ -191,7 +179,7 @@ export default function LeadForm({
               </select>
             </div>
 
-            <div className="grid grid-cols-1 text-black gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 text-black md:grid-cols-2">
               <input
                 type="text"
                 placeholder="Assigned Salesperson"
@@ -223,7 +211,7 @@ export default function LeadForm({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg border text-gray-500 px-4 py-2 text-sm"
+                className="rounded-lg border px-4 py-2 text-sm text-gray-500"
               >
                 Cancel
               </button>
@@ -232,7 +220,7 @@ export default function LeadForm({
                 type="submit"
                 className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
-                Create Lead
+                {lead ? "Update Lead" : "Create Lead"}
               </button>
             </div>
           </form>
