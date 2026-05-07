@@ -57,7 +57,7 @@ export default function DashboardPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
 
   const formatCurrency = (value: number) => {
-    return `Rs. ${value.toLocaleString()}`;
+    return `$${value.toLocaleString()}`;
   };
 
   useEffect(() => {
